@@ -1,6 +1,6 @@
 # Potato Simulator
 
-A single-file HTML5 canvas game where you play as a brave potato battling evil kitchen utensils across 8 levels.
+A single-file HTML5 canvas game where you play as a brave potato battling evil kitchen utensils across 9 levels.
 
 Game sprites and game design by Calvin (age 8).
 
