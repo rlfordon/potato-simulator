@@ -1,6 +1,6 @@
 # Potato Simulator
 
-A single-file HTML5 canvas game where you play as a brave potato battling evil kitchen utensils across 8 levels.
+An HTML5 canvas game where you play as a brave potato battling evil kitchen utensils across 8 levels.
 
 Game sprites and game design by Calvin (age 8).
 
@@ -16,7 +16,7 @@ Battle your way through 8 kitchen zones — from the Sink to the Dough Counter �
 
 **[Play Potato Simulator](https://rlfordon.github.io/potato-simulator/)** — runs right in your browser!
 
-Or download `potato-simulator.html` and open it locally. No dependencies, no build step — everything is in one file.
+Or clone the repo and serve it locally (e.g. `python3 -m http.server`) — no dependencies, no build step. Note: opening the HTML file directly via `file://` won't load the sprites due to browser CORS restrictions.
 
 ## License
 
