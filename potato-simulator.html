@@ -400,6 +400,7 @@ let gameState = 'title'; // title, levelIntro, playing, gameOver, win
 let currentLevel = 1;
 let score = 0;
 let shakeTimer = 0;
+let frameNow = 0; // cached Date.now() per frame
 
 // Level definitions
 const LEVELS = [
@@ -1079,7 +1080,7 @@ function drawMixer(x, y, size, bob) {
   const s = size / 65;
   ctx.lineCap = 'round';
   ctx.lineJoin = 'round';
-  const spin = Date.now() / 150;
+  const spin = frameNow / 150;
 
   // Motor body
   ctx.beginPath();
@@ -1132,10 +1133,10 @@ function drawEntity(entity, emoji, size, isHurt, isAlly) {
     ctx.filter = 'brightness(3)';
   }
 
-  const bob = Math.sin(Date.now() / 300 + (entity.bobOffset || 0)) * 3;
+  const bob = Math.sin(frameNow / 300 + (entity.bobOffset || 0)) * 3;
 
   if (isAlly) {
-    const pulse = Math.sin(Date.now() / 400) * 0.15 + 0.85;
+    const pulse = Math.sin(frameNow / 400) * 0.15 + 0.85;
     ctx.strokeStyle = `rgba(60,140,255,${0.8 * pulse})`;
     ctx.lineWidth = 3;
     wobblyEllipse(0, bob, size * 1.0, size * 1.0, 2);
@@ -1208,10 +1209,10 @@ function drawPotato(p) {
   ctx.save();
   ctx.translate(p.x, p.y);
 
-  const bob = Math.sin(Date.now() / 250) * 3;
-  const scale = p.invincible > 0 ? 1 + Math.sin(Date.now() / 50) * 0.05 : 1;
+  const bob = Math.sin(frameNow / 250) * 3;
+  const scale = p.invincible > 0 ? 1 + Math.sin(frameNow / 50) * 0.05 : 1;
 
-  if (p.invincible > 0 && Math.floor(Date.now() / 80) % 2 === 0) {
+  if (p.invincible > 0 && Math.floor(frameNow / 80) % 2 === 0) {
     ctx.globalAlpha = 0.4;
   }
 
@@ -1333,7 +1334,7 @@ function drawBackground(level) {
     ctx.fillStyle = '#9aa';
     ctx.fillRect(canvas.width / 2 - 6, 50, 12, 30);
     // Drip
-    const dripY = 80 + Math.sin(Date.now() / 500) * 3;
+    const dripY = 80 + Math.sin(frameNow / 500) * 3;
     ctx.fillStyle = 'rgba(100,180,240,0.6)';
     ctx.beginPath();
     ctx.ellipse(canvas.width / 2, dripY + 5, 3, 5, 0, 0, Math.PI * 2);
@@ -1456,12 +1457,12 @@ function drawBackground(level) {
       
       // One burner is on (glowing red) - front left
       if (i === 2) {
-        ctx.strokeStyle = `rgba(255,${80 + Math.sin(Date.now()/200)*30},0,0.7)`;
+        ctx.strokeStyle = `rgba(255,${80 + Math.sin(frameNow/200)*30},0,0.7)`;
         ctx.lineWidth = 5;
         ctx.beginPath();
         ctx.arc(bx, by, radius, 0, Math.PI * 2);
         ctx.stroke();
-        ctx.strokeStyle = `rgba(255,${60 + Math.sin(Date.now()/150)*20},0,0.4)`;
+        ctx.strokeStyle = `rgba(255,${60 + Math.sin(frameNow/150)*20},0,0.4)`;
         ctx.lineWidth = 3;
         ctx.beginPath();
         ctx.arc(bx, by, radius * 0.65, 0, Math.PI * 2);
@@ -1553,7 +1554,7 @@ function drawBackground(level) {
   } else if (level === 5) {
     // === MICROWAVE (ON!) ===
     // Interior glowing
-    const pulse = Math.sin(Date.now() / 300) * 0.1 + 0.9;
+    const pulse = Math.sin(frameNow / 300) * 0.1 + 0.9;
     ctx.fillStyle = `rgb(${Math.floor(200 * pulse)},${Math.floor(180 * pulse)},${Math.floor(140 * pulse)})`;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     
@@ -1568,7 +1569,7 @@ function drawBackground(level) {
     const plateX = canvas.width / 2;
     const plateY = canvas.height / 2;
     const plateR = Math.min(canvas.width, canvas.height) * 0.32;
-    const spinAngle = Date.now() / 2000;
+    const spinAngle = frameNow / 2000;
     
     ctx.save();
     ctx.translate(plateX, plateY);
@@ -1594,9 +1595,9 @@ function drawBackground(level) {
     
     // Microwave sparks / energy
     for (let i = 0; i < 5; i++) {
-      const sparkX = (Date.now() / 3 + i * 300) % canvas.width;
-      const sparkY = Math.sin(Date.now() / 200 + i * 1.5) * canvas.height * 0.3 + canvas.height / 2;
-      ctx.fillStyle = `rgba(255,255,150,${0.3 + Math.sin(Date.now()/100 + i) * 0.2})`;
+      const sparkX = (frameNow / 3 + i * 300) % canvas.width;
+      const sparkY = Math.sin(frameNow / 200 + i * 1.5) * canvas.height * 0.3 + canvas.height / 2;
+      ctx.fillStyle = `rgba(255,255,150,${0.3 + Math.sin(frameNow/100 + i) * 0.2})`;
       ctx.beginPath();
       ctx.arc(sparkX, sparkY, 2 + Math.random() * 3, 0, Math.PI * 2);
       ctx.fill();
@@ -1611,7 +1612,7 @@ function drawBackground(level) {
     
     // Hot corner rivets (glowing)
     [[20, 20], [canvas.width - 20, 20], [20, canvas.height - 20], [canvas.width - 20, canvas.height - 20]].forEach(([rx, ry]) => {
-      ctx.fillStyle = `rgba(255,180,50,${0.5 + Math.sin(Date.now()/200) * 0.3})`;
+      ctx.fillStyle = `rgba(255,180,50,${0.5 + Math.sin(frameNow/200) * 0.3})`;
       ctx.beginPath();
       ctx.arc(rx, ry, 5, 0, Math.PI * 2);
       ctx.fill();
@@ -1621,12 +1622,12 @@ function drawBackground(level) {
     ctx.fillStyle = 'rgba(255,230,100,0.08)';
     ctx.fillRect(canvas.width - 50, 10, 40, canvas.height - 20);
     for (let y = 15; y < canvas.height - 15; y += 8) {
-      ctx.fillStyle = `rgba(255,200,50,${0.05 + Math.sin(Date.now()/400 + y/20) * 0.03})`;
+      ctx.fillStyle = `rgba(255,200,50,${0.05 + Math.sin(frameNow/400 + y/20) * 0.03})`;
       ctx.fillRect(canvas.width - 48, y, 36, 1);
     }
     
     // Humming vibration overlay
-    ctx.fillStyle = `rgba(255,255,200,${0.02 + Math.sin(Date.now()/100) * 0.01})`;
+    ctx.fillStyle = `rgba(255,255,200,${0.02 + Math.sin(frameNow/100) * 0.01})`;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
   } else if (level === 6) {
     // === THE MIXER ===
@@ -1644,7 +1645,7 @@ function drawBackground(level) {
     
     // Curved bowl reflections
     for (let i = 0; i < 8; i++) {
-      const angle = (i / 8) * Math.PI * 2 + Date.now() / 8000;
+      const angle = (i / 8) * Math.PI * 2 + frameNow / 8000;
       const rx = cx + Math.cos(angle) * canvas.width * 0.35;
       const ry = cy + Math.sin(angle) * canvas.height * 0.35;
       ctx.fillStyle = 'rgba(220,230,240,0.08)';
@@ -1654,7 +1655,7 @@ function drawBackground(level) {
     }
     
     // SPINNING BLADE in center!!
-    const bladeAngle = Date.now() / 100; // fast spin!
+    const bladeAngle = frameNow / 100; // fast spin!
     ctx.save();
     ctx.translate(cx, cy);
     ctx.rotate(bladeAngle);
@@ -1671,7 +1672,7 @@ function drawBackground(level) {
     // Blade arms
     for (let b = 0; b < 4; b++) {
       const a = (b / 4) * Math.PI * 2;
-      ctx.fillStyle = `rgba(180,190,200,${0.7 + Math.sin(Date.now()/200) * 0.1})`;
+      ctx.fillStyle = `rgba(180,190,200,${0.7 + Math.sin(frameNow/200) * 0.1})`;
       ctx.beginPath();
       ctx.moveTo(0, 0);
       ctx.lineTo(Math.cos(a - 0.15) * 55, Math.sin(a - 0.15) * 55);
@@ -1701,7 +1702,7 @@ function drawBackground(level) {
     ctx.restore();
     
     // Spinning motion lines around edges
-    const time = Date.now() / 500;
+    const time = frameNow / 500;
     for (let i = 0; i < 12; i++) {
       const a = (i / 12) * Math.PI * 2 + time;
       const r = Math.min(canvas.width, canvas.height) * 0.42;
@@ -1726,7 +1727,7 @@ function drawBackground(level) {
     ctx.strokeRect(12, 12, canvas.width - 24, canvas.height - 24);
     
     // Danger pulsing vignette
-    const dangerPulse = Math.sin(Date.now() / 400) * 0.15 + 0.15;
+    const dangerPulse = Math.sin(frameNow / 400) * 0.15 + 0.15;
     const vignette = ctx.createRadialGradient(cx, cy, canvas.width * 0.2, cx, cy, canvas.width * 0.7);
     vignette.addColorStop(0, 'rgba(255,0,0,0)');
     vignette.addColorStop(1, `rgba(255,0,0,${dangerPulse})`);
@@ -1751,10 +1752,10 @@ function drawBackground(level) {
     
     // Bubbling oil - animated bubbles rising
     for (let i = 0; i < 30; i++) {
-      const bx = ((i * 173 + Date.now() / 10) % canvas.width);
-      const byBase = canvas.height - ((Date.now() / (3 + i % 5) + i * 200) % canvas.height);
+      const bx = ((i * 173 + frameNow / 10) % canvas.width);
+      const byBase = canvas.height - ((frameNow / (3 + i % 5) + i * 200) % canvas.height);
       const bSize = 4 + (i % 5) * 2;
-      const alpha = 0.15 + Math.sin(Date.now() / 300 + i) * 0.1;
+      const alpha = 0.15 + Math.sin(frameNow / 300 + i) * 0.1;
       
       // Bubble
       ctx.fillStyle = `rgba(255,220,80,${alpha})`;
@@ -1771,14 +1772,14 @@ function drawBackground(level) {
     
     // Oil surface shimmer
     for (let x = 0; x < canvas.width; x += 40) {
-      const shimmerY = Math.sin(Date.now() / 600 + x / 50) * 3;
+      const shimmerY = Math.sin(frameNow / 600 + x / 50) * 3;
       ctx.fillStyle = 'rgba(255,230,100,0.08)';
       ctx.fillRect(x, shimmerY, 35, canvas.height);
     }
     
     // Sizzle sparks popping up
     for (let i = 0; i < 8; i++) {
-      const t = Date.now() / 200 + i * 50;
+      const t = frameNow / 200 + i * 50;
       const sx = (Math.sin(t * 0.7 + i * 3) * 0.5 + 0.5) * canvas.width;
       const sy = (Math.cos(t * 0.5 + i * 2) * 0.5 + 0.5) * canvas.height;
       const sparkAlpha = Math.max(0, Math.sin(t) * 0.6);
@@ -1803,12 +1804,12 @@ function drawBackground(level) {
     ctx.strokeRect(16, 16, canvas.width - 32, canvas.height - 32);
     
     // Heat haze overlay
-    const haze = Math.sin(Date.now() / 200) * 0.03 + 0.03;
+    const haze = Math.sin(frameNow / 200) * 0.03 + 0.03;
     ctx.fillStyle = `rgba(255,200,50,${haze})`;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     
     // Danger pulsing - orange for fryer
-    const fryPulse = Math.sin(Date.now() / 350) * 0.1 + 0.1;
+    const fryPulse = Math.sin(frameNow / 350) * 0.1 + 0.1;
     const fryVignette = ctx.createRadialGradient(cx, cy, canvas.width * 0.2, cx, cy, canvas.width * 0.7);
     fryVignette.addColorStop(0, 'rgba(255,100,0,0)');
     fryVignette.addColorStop(1, `rgba(255,80,0,${fryPulse})`);
@@ -1927,13 +1928,13 @@ function drawBackground(level) {
       ctx.fill();
 
       // ALL burners glowing red/orange
-      const flicker = Math.sin(Date.now() / 200 + bx) * 30;
+      const flicker = Math.sin(frameNow / 200 + bx) * 30;
       ctx.strokeStyle = `rgba(255,${80 + flicker},0,0.8)`;
       ctx.lineWidth = 6;
       ctx.beginPath();
       ctx.arc(bx, by, radius, 0, Math.PI * 2);
       ctx.stroke();
-      ctx.strokeStyle = `rgba(255,${60 + Math.sin(Date.now()/150 + by)*20},0,0.5)`;
+      ctx.strokeStyle = `rgba(255,${60 + Math.sin(frameNow/150 + by)*20},0,0.5)`;
       ctx.lineWidth = 3;
       ctx.beginPath();
       ctx.arc(bx, by, radius * 0.65, 0, Math.PI * 2);
@@ -2139,18 +2140,20 @@ function updatePlayer(dt) {
 
   // Recruit ally
   if (keys['e']) {
-    foodPickups.forEach((fp, i) => {
-      if (dist(player, fp) < 60) {
-        recruitAlly(fp);
+    for (let i = foodPickups.length - 1; i >= 0; i--) {
+      if (dist(player, foodPickups[i]) < 60) {
+        recruitAlly(foodPickups[i]);
         foodPickups.splice(i, 1);
         score += 100;
         playSound('recruit');
       }
-    });
+    }
   }
 
-  // Pick up health drops
-  healthDrops.forEach((hd, i) => {
+  // Pick up health drops and handle timeout
+  for (let i = healthDrops.length - 1; i >= 0; i--) {
+    const hd = healthDrops[i];
+    hd.life--;
     if (dist(player, hd) < 40 && player.hp < player.maxHp) {
       const healAmt = 25;
       player.hp = Math.min(player.maxHp, player.hp + healAmt);
@@ -2158,14 +2161,10 @@ function updatePlayer(dt) {
       spawnParticles(hd.x, hd.y, '#44ff44', 10);
       playSound('heal');
       healthDrops.splice(i, 1);
+    } else if (hd.life <= 0) {
+      healthDrops.splice(i, 1);
     }
-  });
-
-  // Health drop timeout
-  healthDrops.forEach((hd, i) => {
-    hd.life--;
-    if (hd.life <= 0) healthDrops.splice(i, 1);
-  });
+  }
 
   // Invincibility timer
   if (player.invincible > 0) player.invincible--;
@@ -2177,7 +2176,9 @@ function updatePlayer(dt) {
 }
 
 function updateEnemies() {
-  enemies.forEach((e, ei) => {
+  const newEnemies = []; // collect pizza slices to add after iteration
+  for (let ei = enemies.length - 1; ei >= 0; ei--) {
+    const e = enemies[ei];
     if (e.hit > 0) e.hit--;
     if (e.attackCooldown > 0) e.attackCooldown--;
 
@@ -2189,7 +2190,7 @@ function updateEnemies() {
       e.kby = (e.kby || 0) * 0.7;
       if (Math.abs(e.kbx) < 0.1) e.kbx = 0;
       if (Math.abs(e.kby) < 0.1) e.kby = 0;
-      return; // skip AI while being knocked back
+      continue; // skip AI while being knocked back
     }
 
     // === ENEMY-SPECIFIC BEHAVIOR ===
@@ -2212,7 +2213,7 @@ function updateEnemies() {
       }
     } else if (e.type === 'spoon') {
       // Spoons: circle around player, attack in groups
-      const circleAngle = Math.atan2(dy, dx) + Math.PI + Math.sin(Date.now() / 800 + e.bobOffset) * 1.5;
+      const circleAngle = Math.atan2(dy, dx) + Math.PI + Math.sin(frameNow / 800 + e.bobOffset) * 1.5;
       const targetDist = 80;
       const tx = player.x + Math.cos(circleAngle) * targetDist;
       const ty = player.y + Math.sin(circleAngle) * targetDist;
@@ -2268,7 +2269,7 @@ function updateEnemies() {
     } else {
       // Default (forks): simple chase with wobble
       if (d > e.size + 20) {
-        const wobble = Math.sin(Date.now() / 500 + e.bobOffset) * 0.5;
+        const wobble = Math.sin(frameNow / 500 + e.bobOffset) * 0.5;
         e.x += (dx / d) * e.speed + wobble;
         e.y += (dy / d) * e.speed;
       }
@@ -2316,7 +2317,7 @@ function updateEnemies() {
         for (let s = 0; s < 6; s++) {
           const angle = (s / 6) * Math.PI * 2;
           const dist = 60;
-          enemies.push({
+          newEnemies.push({
             x: e.x + Math.cos(angle) * dist,
             y: e.y + Math.sin(angle) * dist,
             type: 'pizza_slice',
@@ -2346,11 +2347,16 @@ function updateEnemies() {
       }
       enemies.splice(ei, 1);
     }
-  });
+  }
+  // Add pizza slices after iteration so they aren't processed this frame
+  if (newEnemies.length > 0) {
+    enemies.push(...newEnemies);
+  }
 }
 
 function updateAllies() {
-  allies.forEach((a, ai) => {
+  for (let ai = allies.length - 1; ai >= 0; ai--) {
+    const a = allies[ai];
     if (a.hit > 0) a.hit--;
     if (a.attackCooldown > 0) a.attackCooldown--;
 
@@ -2415,13 +2421,13 @@ function updateAllies() {
       spawnParticles(a.x, a.y, '#4488ff', 15);
       createFloatingText(a.x, a.y, `${a.emoji} down!`, '#ff6666');
       allies.splice(ai, 1);
-      return;
+      continue;
     }
 
     // Clamp
     a.x = Math.max(20, Math.min(canvas.width - 20, a.x));
     a.y = Math.max(20, Math.min(canvas.height - 20, a.y));
-  });
+  }
 
   // Update ally icons in HUD
   const iconsDiv = document.getElementById('ally-icons');
@@ -2429,14 +2435,15 @@ function updateAllies() {
 }
 
 function updateParticles() {
-  particles.forEach((p, i) => {
+  for (let i = particles.length - 1; i >= 0; i--) {
+    const p = particles[i];
     p.x += p.vx;
     p.y += p.vy;
     p.life -= 0.03;
     p.vx *= 0.95;
     p.vy *= 0.95;
     if (p.life <= 0) particles.splice(i, 1);
-  });
+  }
 }
 
 function drawParticles() {
@@ -2453,6 +2460,7 @@ function drawParticles() {
 // ============ GAME LOOP ============
 function gameLoop() {
   requestAnimationFrame(gameLoop);
+  frameNow = Date.now();
 
   if (gameState !== 'playing') return;
 
@@ -2474,7 +2482,7 @@ function gameLoop() {
     const glow = Math.sin(fp.glow) * 0.3 + 0.7;
     ctx.save();
     ctx.translate(fp.x, fp.y);
-    const bob = Math.sin(Date.now() / 400 + fp.bobOffset) * 5;
+    const bob = Math.sin(frameNow / 400 + fp.bobOffset) * 5;
     const ringR = fp.strong ? 30 : 25;
 
     // Blue filled circle behind
@@ -2579,8 +2587,8 @@ function gameLoop() {
   healthDrops.forEach(hd => {
     ctx.save();
     ctx.translate(hd.x, hd.y);
-    const bob = Math.sin(Date.now() / 350 + hd.bobOffset) * 4;
-    const blink = hd.life < 120 ? (Math.floor(Date.now() / 100) % 2 === 0 ? 0.4 : 1) : 1;
+    const bob = Math.sin(frameNow / 350 + hd.bobOffset) * 4;
+    const blink = hd.life < 120 ? (Math.floor(frameNow / 100) % 2 === 0 ? 0.4 : 1) : 1;
     ctx.globalAlpha = blink;
     // Green glow
     ctx.fillStyle = 'rgba(50,200,50,0.3)';
@@ -2608,7 +2616,7 @@ function gameLoop() {
   enemies.forEach(e => {
     // Boss warning ring before special attack
     if (e.warningRing) {
-      const pulse = Math.sin(Date.now() / 80) * 0.3 + 0.5;
+      const pulse = Math.sin(frameNow / 80) * 0.3 + 0.5;
       ctx.strokeStyle = `rgba(255,50,50,${pulse})`;
       ctx.lineWidth = 3;
       ctx.setLineDash([8, 4]);

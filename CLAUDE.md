@@ -1,13 +1,13 @@
 # Potato Simulator - Claude Code Project Guide
 
 ## What This Is
-A browser-based combat game called "Potato Simulator" — a single HTML file (`potato-simulator.html`). A potato fights kitchen utensils across 8 levels. The game was co-designed with a kid who drew all the character art by hand with thick black marker on white paper. His drawings were processed into colored transparent PNG sprites and embedded as base64 in the HTML.
+A browser-based combat game called "Potato Simulator" — an HTML file (`potato-simulator.html`) plus a `sprites/` directory of PNG images. A potato fights kitchen utensils across 8 levels. The game was co-designed with a kid who drew all the character art by hand with thick black marker on white paper. His drawings were processed into colored transparent PNGs using the pipeline below.
 
 ## Tech Stack
-- **Single HTML file** containing all CSS, JS, and base64 sprite data
+- **HTML + JS + CSS** in a single HTML file, with sprite PNGs loaded from `sprites/` directory
 - **HTML5 Canvas** for all rendering (backgrounds, sprites, particles, HUD)
 - **Web Audio API** for synthesized retro sound effects
-- **No dependencies, no build step** — just open the HTML file in a browser
+- **No dependencies, no build step** — serve over HTTP (GitHub Pages, `python3 -m http.server`, etc.). Opening via `file://` won't work due to browser CORS restrictions on image loading
 - **index.html** is a copy of potato-simulator.html for GitHub Pages — always sync after changes
 
 ## Game Structure
@@ -41,7 +41,7 @@ A browser-based combat game called "Potato Simulator" — a single HTML file (`p
 
 ### Important Code Sections (search for these comments)
 - `// ============ GAME STATE ============` — levels, enemy/ally definitions, player stats
-- `// ============ SPRITE IMAGES ============` — base64 sprite loading
+- `// ============ SPRITE IMAGES ============` — sprite loading from `sprites/` directory
 - `// ============ CUSTOM SPRITE DRAWINGS ============` — canvas fallback drawings (used when no sprite image exists)
 - `// ============ DRAW ENTITY ============` — main entity rendering (tries sprite image first, falls back to canvas drawing, then emoji)
 - `function drawPotato(p)` — player rendering
@@ -63,7 +63,7 @@ A browser-based combat game called "Potato Simulator" — a single HTML file (`p
 
 ## Sprite Pipeline
 
-All enemy/player sprites are the kid's actual marker drawings, processed into colored transparent PNGs and embedded as base64. Here's how to add a new sprite:
+All enemy/player sprites are the kid's actual marker drawings, processed into colored transparent PNGs stored in the `sprites/` directory. Here's how to add a new sprite:
 
 ### Requirements
 - Python with Pillow and scipy: `pip install Pillow scipy`
@@ -156,8 +156,8 @@ def process_and_colorize(input_path, output_name, fill_color, target_h=200):
 ```
 
 ### To add a new sprite to the game:
-1. Process the drawing: `b64 = process_and_colorize('photo.jpeg', 'name_sprite', (R, G, B))`
-2. Add `loadSprite('name', '<base64>');` in the SPRITE IMAGES section
+1. Process the drawing: `process_and_colorize('photo.jpeg', 'name_sprite', (R, G, B))` — saves PNG to current directory
+2. Move the PNG to `sprites/name.png` and add `loadSprite('name', 'sprites/name.png');` in the SPRITE IMAGES section
 3. Add enemy def in `ENEMY_DEFS`: `name: { emoji: '🔵', hp: 30, speed: 1.5, damage: 8, size: 30, score: 50, name: 'Name' }`
 4. Add to a level in `LEVELS` array: `{ type: 'name', count: 3 }`
 5. If it's a boss, add it to the boss filter in `spawnEnemies()`: search for `['whisk','cleaver','mixer','fryer','pizza','rolling_pin']`
