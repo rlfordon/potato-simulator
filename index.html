@@ -2241,7 +2241,7 @@ function updateEnemies() {
         spawnParticles(e.x, e.y, '#ff4444', 30);
         shakeTimer = 12;
         // Damage player if in range
-        if (dist(player, e) < 120) {
+        if (d < 120) {
           const bossDmg = Math.floor(e.damage * 1.5);
           player.hp -= bossDmg;
           player.invincible = 40;
@@ -2386,18 +2386,17 @@ function updateAllies() {
     });
 
     if (nearest) {
-      // Move toward enemy
+      // Move toward enemy (reuse nearDist from search above)
       const dx = nearest.x - a.x;
       const dy = nearest.y - a.y;
-      const d = Math.hypot(dx, dy);
 
-      if (d > a.size + 20) {
-        a.x += (dx / d) * a.speed;
-        a.y += (dy / d) * a.speed;
+      if (nearDist > a.size + 20) {
+        a.x += (dx / nearDist) * a.speed;
+        a.y += (dy / nearDist) * a.speed;
       }
 
       // Attack
-      if (d < a.size + 35 && a.attackCooldown === 0) {
+      if (nearDist < a.size + 35 && a.attackCooldown === 0) {
         nearest.hp -= a.damage;
         nearest.hit = 10;
         knockback(nearest, a.x, a.y, 5);

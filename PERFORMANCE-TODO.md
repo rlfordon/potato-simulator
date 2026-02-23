@@ -1,16 +1,15 @@
 # Performance TODO
 
 Remaining optimizations identified during the performance investigation.
-Fixes #1 and #2 are done and pushed.
+Fixes #1, #2, and #3 are done and pushed.
 
 ## Completed
 
 - [x] **Fix splice-in-forEach bugs** — Replaced `forEach` + `splice(i,1)` with reverse `for` loops in `updateEnemies`, `updateAllies`, `updateParticles`, health drops, and food pickups. Also deferred pizza slice spawning to after the enemy loop. (correctness fix)
 - [x] **Cache `Date.now()` per frame** — Added `frameNow` variable set once at the top of `gameLoop()`, replacing 40+ `Date.now()` calls per frame.
+- [x] **Reduce `Math.hypot` / `dist()` calls in hot loops** — In `updateEnemies`, reuse the already-computed `d` (player-to-enemy distance) for the boss AOE range check instead of calling `dist()` again. In `updateAllies`, reuse `nearDist` from the nearest-enemy search instead of recomputing `Math.hypot()`.
 
 ## Remaining
-
-- [ ] **Reduce `Math.hypot` / `dist()` calls in hot loops** — `updateEnemies` and `updateAllies` both call `dist()` or `Math.hypot()` multiple times per entity per frame for the same pair. Cache the distance value once per entity and reuse it for AI decisions, attack range checks, etc.
 
 - [ ] **Offscreen culling for draw calls** — Skip rendering entities, particles, and health drops that are outside the visible canvas. Currently everything is drawn every frame regardless of position.
 
