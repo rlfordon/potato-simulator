@@ -1,14 +1,13 @@
 # Potato Simulator - Claude Code Project Guide
 
 ## What This Is
-A browser-based combat game called "Potato Simulator" — an HTML file (`potato-simulator.html`) plus a `sprites/` directory of PNG images. A potato fights kitchen utensils across 8 levels. The game was co-designed with a kid who drew all the character art by hand with thick black marker on white paper. His drawings were processed into colored transparent PNGs using the pipeline below.
+A browser-based combat game called "Potato Simulator" — an HTML file (`index.html`) plus a `sprites/` directory of PNG images. A potato fights kitchen utensils across 8 levels. The game was co-designed with a kid who drew all the character art by hand with thick black marker on white paper. His drawings were processed into colored transparent PNGs using the pipeline below.
 
 ## Tech Stack
 - **HTML + JS + CSS** in a single HTML file, with sprite PNGs loaded from `sprites/` directory
 - **HTML5 Canvas** for all rendering (backgrounds, sprites, particles, HUD)
 - **Web Audio API** for synthesized retro sound effects
 - **No dependencies, no build step** — serve over HTTP (GitHub Pages, `python3 -m http.server`, etc.). Opening via `file://` won't work due to browser CORS restrictions on image loading
-- **index.html** is a copy of potato-simulator.html for GitHub Pages — always sync after changes
 
 ## Game Structure
 
